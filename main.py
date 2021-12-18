@@ -7,7 +7,6 @@ laby.read_map("map.txt")
 laby.print_map()
 
 def mainloop():
-    global laby
     eg.fill_image(color=eg.Color.BLACK)
     eg.set_color(eg.Color.BLUE)
     eg.set_fill_color(eg.Color.GREEN)

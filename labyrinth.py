@@ -5,7 +5,7 @@ import easygraphics as graphics
 LABYRINTH_WALL_SIZE = 18
 LABYRINTH_SIZE = 5
 TOTAL_SIZE = LABYRINTH_SIZE * LABYRINTH_WALL_SIZE  # 288
-DRAW_PRESCALER = 5
+DRAW_PRESCALER = 8
 
 
 class Wall:
@@ -27,7 +27,7 @@ class Labyrinth:
 
     def __init__(self):
         self.map = []
-        for row_idx in range(LABYRINTH_SIZE + 1):
+        for row_idx in range(2*LABYRINTH_SIZE +1 ):
             row = []
             for col_idx in range(LABYRINTH_SIZE + 1):
                 row.append(Wall())
@@ -40,17 +40,17 @@ class Labyrinth:
             print("File not found or path is incorrect")
             return None
         ind = 0
-        for i in range(LABYRINTH_SIZE + 1):
+        for i in range(2*LABYRINTH_SIZE + 1):
             line = file.readline()
             for j in range(LABYRINTH_SIZE + 1):
                 ind += 1
                 if not i % 2:
                     self.map[i][j].vert_horiz = 'h'
-                    self.map[i][j].location.y = i/2 * LABYRINTH_WALL_SIZE
+                    self.map[i][j].location.y = i / 2 * LABYRINTH_WALL_SIZE
                     self.map[i][j].location.x = LABYRINTH_WALL_SIZE / 2 + j * LABYRINTH_WALL_SIZE
                 else:
                     self.map[i][j].vert_horiz = 'v'
-                    self.map[i][j].location.y =  i/2 * LABYRINTH_WALL_SIZE
+                    self.map[i][j].location.y = i / 2 * LABYRINTH_WALL_SIZE
                     self.map[i][j].location.x = j * LABYRINTH_WALL_SIZE
                 if line[j] == '0':
                     self.map[i][j].exists = False
@@ -61,7 +61,7 @@ class Labyrinth:
     def print_map(self):
         for walls in self.map:
             for wall in walls:
-                print(wall.vert_horiz , end=' ')
+                print(wall.vert_horiz, end=' ')
             print('')
 
 
