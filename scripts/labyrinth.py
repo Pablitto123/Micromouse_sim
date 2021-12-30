@@ -5,6 +5,7 @@ import easygraphics as graphics
 import copy
 import math
 
+
 class Wall:
     exists: bool
     vert_horiz: str
@@ -64,11 +65,6 @@ class Labyrinth:
             print('')
 
 
-class Menu:
-    def __init__(self):
-        pass
-
-
 class MapEditor:
     lab: Labyrinth
 
@@ -92,11 +88,12 @@ class MapEditor:
         graphics.set_fill_color(graphics.Color.DARK_RED)
         point = self.lab.map[clo_i][clo_j]
         where = Point2D(point.location.x * DRAW_PRESCALER, point.location.y * DRAW_PRESCALER)
-        graphics.fill_circle(where.x, where.y, 5)
+        if closest < LABYRINTH_WALL_SIZE / 3 * DRAW_PRESCALER:
+            graphics.fill_circle(where.x, where.y, 5)
         graphics.set_fill_color(color)
         if graphics.has_mouse_msg():
             msg = graphics.get_mouse_msg()
-            if msg.type == graphics.MouseMessageType.PRESS_MESSAGE:
+            if msg.type == graphics.MouseMessageType.PRESS_MESSAGE and closest < LABYRINTH_WALL_SIZE / 3 * DRAW_PRESCALER:
                 if self.lab.map[clo_i][clo_j].exists:
                     self.lab.map[clo_i][clo_j].exists = False
                 else:
