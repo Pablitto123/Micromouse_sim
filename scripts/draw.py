@@ -3,6 +3,30 @@ from scripts.interface import Menu
 from scripts.labyrinth import Labyrinth
 from scripts.constants import DRAW_PRESCALER, LABYRINTH_WALL_SIZE, TOTAL_SIZE, LABYRINTH_SIZE
 import easygraphics as graphics
+import math
+
+
+def draw_robot_sensors(robot: Robot):
+    last_color = graphics.get_fill_color()
+    last_draw_color = graphics.get_color()
+    last_line_width = graphics.get_line_width()
+    graphics.set_fill_color(graphics.Color.MAGENTA)
+    graphics.set_color(graphics.Color.YELLOW)
+    for sensor in robot.sensors:
+        graphics.set_line_width(0.3 * DRAW_PRESCALER)
+        graphics.set_color(graphics.Color.YELLOW)
+        loc_x = (robot.location.x + sensor.rel_loc.x) * DRAW_PRESCALER
+        loc_y = (robot.location.y + sensor.rel_loc.y) * DRAW_PRESCALER
+        s_start_x = loc_x + math.cos(math.radians(sensor.fi)) * sensor.size[1] / 2 * DRAW_PRESCALER
+        s_start_y = loc_y + math.sin(math.radians(sensor.fi)) * sensor.size[1] / 2 * DRAW_PRESCALER
+        s_end_x = loc_x - math.cos(math.radians(sensor.fi)) * sensor.size[1] / 2 * DRAW_PRESCALER
+        s_end_y = loc_y - math.sin(math.radians(sensor.fi)) * sensor.size[1] / 2 * DRAW_PRESCALER
+        graphics.draw_line(s_start_x, s_start_y, s_end_x, s_end_y)
+        graphics.fill_circle(loc_x, loc_y, 2)
+
+    graphics.set_line_width(last_line_width)
+    graphics.set_color(last_draw_color)
+    graphics.set_fill_color(last_color)
 
 
 def draw_robot(robot: Robot):
@@ -17,6 +41,7 @@ def draw_robot(robot: Robot):
     graphics.draw_line(robot.location.x * DRAW_PRESCALER, robot.location.y * DRAW_PRESCALER,
                        robot.location.x * DRAW_PRESCALER,
                        (robot.location.y + robot.frame.points[0].y) * DRAW_PRESCALER)
+    draw_robot_sensors(robot)
     graphics.rotate(-robot.rotation, robot.location.x * DRAW_PRESCALER, robot.location.y * DRAW_PRESCALER)
     graphics.set_fill_color(last_color)
 
