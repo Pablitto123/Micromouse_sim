@@ -1,9 +1,10 @@
-from scripts.robot_model import Robot
+from scripts.robot_model import Robot, Point2D
 from scripts.interface import Menu
 from scripts.labyrinth import Labyrinth
 from scripts.constants import DRAW_PRESCALER, LABYRINTH_WALL_SIZE, TOTAL_SIZE, LABYRINTH_SIZE
 import easygraphics as graphics
 import math
+from typing import List
 
 
 def draw_robot_sensors(robot: Robot):
@@ -27,6 +28,27 @@ def draw_robot_sensors(robot: Robot):
     graphics.set_line_width(last_line_width)
     graphics.set_color(last_draw_color)
     graphics.set_fill_color(last_color)
+
+
+def draw_sensors_lines(starts: List[Point2D], ends: List[Point2D]):
+    """
+    start - location of sensors
+    end - locations of points which they are facing
+    draws line from starts to ends
+    you can get line starts and ends from
+    LabRobInterface.read_all_sensors
+    """
+    last_draw_color = graphics.get_color()
+    graphics.set_color(graphics.Color.LIGHT_RED)
+    for i in range(len(starts)):
+        min_point = ends[i]
+        tot_loc = starts[i]
+        graphics.set_line_width(2)
+        graphics.fill_circle(tot_loc.x * DRAW_PRESCALER, tot_loc.y * DRAW_PRESCALER, 2)
+        graphics.draw_line(tot_loc.x * DRAW_PRESCALER, tot_loc.y * DRAW_PRESCALER, min_point.x * DRAW_PRESCALER,
+                           min_point.y * DRAW_PRESCALER)
+
+    graphics.set_color(last_draw_color)
 
 
 def draw_robot(robot: Robot):
@@ -73,12 +95,15 @@ def draw_mess_editor():
     graphics.draw_text(TOTAL_SIZE * DRAW_PRESCALER + 120, 360, "s to save map")
 
 
-def draw_mess_sim():
+def draw_mess_sim(time_on: float):
     last_color = graphics.get_color()
     graphics.set_color(0xFFFFFF)
     graphics.draw_text(TOTAL_SIZE * DRAW_PRESCALER + 100, 300, "Press:")
     graphics.draw_text(TOTAL_SIZE * DRAW_PRESCALER + 120, 330, "x to go back to menu")
     graphics.draw_text(TOTAL_SIZE * DRAW_PRESCALER + 120, 360, "l to load map")
+    graphics.draw_text(TOTAL_SIZE * DRAW_PRESCALER + 120, 390, "s to start/stop algorithm")
+    graphics.draw_text(TOTAL_SIZE * DRAW_PRESCALER + 120, 420, "r to reset sim")
+    graphics.draw_text(TOTAL_SIZE * DRAW_PRESCALER + 120, 200, "time on: {:.2f}".format(time_on))
 
 
 def draw_menu(menu: Menu):

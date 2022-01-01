@@ -5,14 +5,17 @@ from scripts import draw
 from scripts.interface import Menu, Interface
 
 menu = Menu()
-laby = labyrinth.Labyrinth()
-laby.read_map("map.txt")
-editor = labyrinth.MapEditor(laby)
-editor.lab = laby
+lab = labyrinth.Labyrinth()
+lab.read_map("map.txt")
+editor = labyrinth.MapEditor(lab)
+editor.lab = lab
 robot = Robot()
-interface = Interface(laby, robot)
+interface = Interface(lab, robot)
 
+"""
+Put control algorithm in Control.control_task in control.py
 
+"""
 def main():
     interface.begin()
 

@@ -42,15 +42,17 @@ class Engine:
 class Frame:
     points: List[Point2D]
 
-    def __init__(self):
-        p1 = Point2D(-3, -3)
-        p2 = Point2D(-3, 3)
-        p3 = Point2D(3, 3)
-        p4 = Point2D(3, -3)
+    def __init__(self, size):
+        p1 = Point2D(-size, -size)
+        p2 = Point2D(-size, size)
+        p3 = Point2D(size, size)
+        p4 = Point2D(size, -size)
         self.points = [p1, p2, p3, p4]
 
 
 class Robot:
+    sq_size = 3 # size of half of robot
+    ses_len = sq_size*2/3
     frame: Frame
     mass: float
     omega: float
@@ -65,12 +67,12 @@ class Robot:
         self.engines = [e1, e2]
         self.location = Point2D(LABYRINTH_WALL_SIZE / 2, LABYRINTH_WALL_SIZE / 2)
         self.rotation = 40
-        self.frame = Frame()
-        d1 = DistanceSensor(Point2D(-1 - 2 ** (1 / 2), -3 + 1 + (2 ** 1 / 2)), fi=-90, size=[0.5, 2])
-        d2 = DistanceSensor(Point2D(-1 - (2 ** (1 / 2)) / 2, -3 + (2 ** 1 / 2) / 2), fi=-45, size=[0.5, 2])
-        d3 = DistanceSensor(Point2D(0, -3), fi=0, size=[0.5, 2])
-        d4 = DistanceSensor(Point2D(1 + (2 ** (1 / 2)) / 2, -3 + (2 ** 1 / 2) / 2), fi=45, size=[0.5, 2])
-        d5 = DistanceSensor(Point2D(1 + 2 ** (1 / 2), -3 + 1 + (2 ** 1 / 2)), fi=90, size=[0.5, 2])
+        self.frame = Frame(self.sq_size)
+        d1 = DistanceSensor(Point2D(self.ses_len/2*(-1 - 2 ** (1 / 2)), -self.sq_size +self.ses_len/2* (1 + (2 ** 1 / 2))), fi=-90, size=[0.5, self.ses_len])
+        d2 = DistanceSensor(Point2D(self.ses_len/2*(-1 - (2 ** (1 / 2)) / 2), -self.sq_size + self.ses_len/2*((2 ** 1 / 2) / 2)), fi=-45, size=[0.5, self.ses_len])
+        d3 = DistanceSensor(Point2D(0, -self.sq_size), fi=0, size=[0.5, self.ses_len])
+        d4 = DistanceSensor(Point2D(self.ses_len/2*(1 + (2 ** (1 / 2)) / 2), -self.sq_size + self.ses_len/2*((2 ** 1 / 2) / 2)), fi=45, size=[0.5, self.ses_len])
+        d5 = DistanceSensor(Point2D(self.ses_len/2*(1 + 2 ** (1 / 2)), -self.sq_size + self.ses_len/2*(1 + (2 ** 1 / 2))), fi=90, size=[0.5, self.ses_len])
         self.sensors = [d1, d2, d3, d4, d5]
 
     def set_engine_voltage(self):
