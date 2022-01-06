@@ -56,9 +56,11 @@ class LabRobInterface:
     @staticmethod
     def get_sensor_reading(robot: Robot, lab: Labyrinth, index):
         sensor = robot.sensors[index]
-        facing_x = LabRobInterface.where_facing_x(robot, index)
-        facing_y = LabRobInterface.where_facing_y(robot, index)
         sensor_tot_fi = robot.rotation + sensor.fi
+        if not sensor_tot_fi % 180:
+            robot.rotation += 0.001
+            sensor_tot_fi = robot.rotation + sensor.fi
+
         tot_rel_x = sensor.rel_loc.x * math.cos(math.radians(robot.rotation)) - sensor.rel_loc.y * math.sin(
             math.radians(robot.rotation))
         tot_rel_y = sensor.rel_loc.x * math.sin(math.radians(robot.rotation)) + sensor.rel_loc.y * math.cos(
@@ -68,8 +70,6 @@ class LabRobInterface:
         tot_loc_x = tot_rel_x + robot.location.x
         b = 0
 
-        if not sensor_tot_fi % 180:
-            sensor_tot_fi += 0.001
 
         a = -1 / math.tan(math.radians(sensor_tot_fi))
         if sensor_tot_fi % 180:
