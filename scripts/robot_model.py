@@ -35,8 +35,14 @@ class DistanceSensor:
 class Engine:
     inertia: float = 3
     omega: float = 0
+    radius: float = 1
     max_omega_5v: float
-    pass
+
+    def set_velocity(self, v: float):
+        self.omega = v / self.radius
+
+    def get_velocity(self):
+        return self.omega * self.radius
 
 
 class Frame:
@@ -51,28 +57,39 @@ class Frame:
 
 
 class Robot:
-    sq_size = 3 # size of half of robot
-    ses_len = sq_size*2/3
+    sq_size = 3  # size of half of robot
+    ses_len = sq_size * 2 / 3
     frame: Frame
     mass: float
     omega: float
     rotation: float
+    radius: float
     location: Point2D
     sensors: List[DistanceSensor]
     engines: List[Engine]
+    velocity: float
 
     def __init__(self):
         e1 = Engine()
         e2 = Engine()
+        self.radius = 3.0
         self.engines = [e1, e2]
-        self.location = Point2D(LABYRINTH_WALL_SIZE / 2, LABYRINTH_WALL_SIZE / 2)
-        self.rotation = 40
+        self.location = Point2D(LABYRINTH_WALL_SIZE / 2 + 30, LABYRINTH_WALL_SIZE / 2 + 30)
+        self.rotation = 125
         self.frame = Frame(self.sq_size)
-        d1 = DistanceSensor(Point2D(self.ses_len/2*(-1 - 2 ** (1 / 2)), -self.sq_size +self.ses_len/2* (1 + (2 ** 1 / 2))), fi=-90, size=[0.5, self.ses_len])
-        d2 = DistanceSensor(Point2D(self.ses_len/2*(-1 - (2 ** (1 / 2)) / 2), -self.sq_size + self.ses_len/2*((2 ** 1 / 2) / 2)), fi=-45, size=[0.5, self.ses_len])
+        d1 = DistanceSensor(
+            Point2D(self.ses_len / 2 * (-1 - 2 ** (1 / 2)), -self.sq_size + self.ses_len / 2 * (1 + (2 ** 1 / 2))),
+            fi=-90, size=[0.5, self.ses_len])
+        d2 = DistanceSensor(Point2D(self.ses_len / 2 * (-1 - (2 ** (1 / 2)) / 2),
+                                    -self.sq_size + self.ses_len / 2 * ((2 ** 1 / 2) / 2)), fi=-45,
+                            size=[0.5, self.ses_len])
         d3 = DistanceSensor(Point2D(0, -self.sq_size), fi=0, size=[0.5, self.ses_len])
-        d4 = DistanceSensor(Point2D(self.ses_len/2*(1 + (2 ** (1 / 2)) / 2), -self.sq_size + self.ses_len/2*((2 ** 1 / 2) / 2)), fi=45, size=[0.5, self.ses_len])
-        d5 = DistanceSensor(Point2D(self.ses_len/2*(1 + 2 ** (1 / 2)), -self.sq_size + self.ses_len/2*(1 + (2 ** 1 / 2))), fi=90, size=[0.5, self.ses_len])
+        d4 = DistanceSensor(
+            Point2D(self.ses_len / 2 * (1 + (2 ** (1 / 2)) / 2), -self.sq_size + self.ses_len / 2 * ((2 ** 1 / 2) / 2)),
+            fi=45, size=[0.5, self.ses_len])
+        d5 = DistanceSensor(
+            Point2D(self.ses_len / 2 * (1 + 2 ** (1 / 2)), -self.sq_size + self.ses_len / 2 * (1 + (2 ** 1 / 2))),
+            fi=90, size=[0.5, self.ses_len])
         self.sensors = [d1, d2, d3, d4, d5]
 
     def set_engine_voltage(self):
@@ -81,5 +98,21 @@ class Robot:
     def get_sensor_reading(self, sensor: DistanceSensor):
         pass
 
-    def rotate(self,fi):
-        self.rotation+=fi
+    def rotate(self, fi):
+        self.rotation += fi
+
+    def set_engines(self, v_l: float, v_r: float):
+        self.engines[0].set_velocity(v_l)
+        self.engines[1].set_velocity(v_r)
+        self.velocity = (self.engines[0].get_velocity() + self.engines[1].get_velocity()) / 2
+        print(self.velocity)
+
+    def move_by_engines(self, time_step):
+        delta_fi = time_step * (self.engines[1].get_velocity() - self.engines[0].get_velocity()) / 2 / self.radius
+        delta_fi *= 180/math.pi
+        self.velocity = (self.engines[0].get_velocity() + self.engines[1].get_velocity()) / 2
+        x = time_step * self.velocity * math.sin(math.radians(self.rotation))
+        y = -time_step * self.velocity * math.cos(math.radians(self.rotation))
+        x_y = Point2D(x, y)
+        self.rotate(delta_fi)
+        self.location = self.location + x_y

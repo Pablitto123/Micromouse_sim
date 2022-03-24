@@ -70,7 +70,6 @@ class LabRobInterface:
         tot_loc_x = tot_rel_x + robot.location.x
         b = 0
 
-
         a = -1 / math.tan(math.radians(sensor_tot_fi))
         if sensor_tot_fi % 180:
             b = tot_loc_y - a * tot_loc_x
@@ -161,11 +160,13 @@ class LabRobInterface:
 
 
 class Control:
+    task = 0
     is_on: False
     robot: Robot
     lab: Labyrinth
     sim_time = 0.0
-    readings_distance = [0,0,0,0,0]
+    readings_distance = [0, 0, 0, 0, 0]
+
     def __init__(self, robot: Robot, lab: Labyrinth):
         self.robot = robot
         self.lab = lab
@@ -193,12 +194,8 @@ class Control:
         """
         if self.is_on:
             self.sim_time += 0.02
-            task = 0
-            if self.robot.rotation < 90 and task == 0:
-                self.turn_around(1)
-            if self.robot.rotation >= 90 and task == 0:
-                task = 1
-            if self.readings_distance[2] > 6 and task == 1:
-                self.move_forward(1)
-
-
+            self.robot.move_by_engines(0.02)
+        if self.readings_distance[2] < 3.0:
+            self.robot.set_engines(0, 0)
+        else:
+            self.robot.set_engines(20, 20)

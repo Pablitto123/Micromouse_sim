@@ -56,7 +56,7 @@ class Interface:
         self.editor = MapEditor(lab)
         self.img = None
         self.controller = Control(robot, lab)
-        self.timer = RepeatTimer(0.01, self.controller.control_task)
+        self.timer = RepeatTimer(0.02, self.controller.control_task)
         self.timer2 = RepeatTimer(0.02, self.controller.read_sensors)
 
     def begin(self):
@@ -118,6 +118,7 @@ class Interface:
             if key == 'x':
                 self.mode = Mode.MENU
             if key == 'r':
+                self.controller.task = 0
                 self.controller.is_on = False
                 self.controller.reset()
             if key == 's':
